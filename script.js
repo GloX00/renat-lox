@@ -46,7 +46,7 @@ rulesScreen.innerHTML = `
     <p>Красный квадрат — это враг</p>
     <p>У тебя есть 3 жизни</p>
     <p>В игре 10 уровней</p>
-    <button onclick="startGame()">Начать игру</button>
+    <button onclick="startGame()" style="margin-top: 80%;">Начать игру</button>
 `;
 document.body.appendChild(rulesScreen);
 
