@@ -22,7 +22,7 @@ const MAX_LEVEL = 10;
 // Джойстик
 const joystick = {
     x: 100,
-    y: canvas.height - 100,
+    y: canvas.height - 50, // Опускаем джойстик ниже
     radius: 50,
     innerRadius: 30,
     touchX: null,
