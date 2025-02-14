@@ -9,22 +9,22 @@ winMenu.innerHTML = `<h2>Победа! Ну ты и лох 😂</h2><button oncl
 document.body.appendChild(winMenu);
 
 // Масштабирование под телефон
-canvas.width = window.innerWidth * 0.9;
-canvas.height = window.innerHeight * 0.7;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 let player, bonuses, mobs, shields, level, isGameOver, lives;
 let keys = {};
 let touchActive = false;
 let touchX = null, touchY = null; // Координаты касания
 
-const MAX_LEVEL = 1;
+const MAX_LEVEL = 10;
 
 // Джойстик
 const joystick = {
     x: canvas.width / 2, // Центрируем по горизонтали
-    y: canvas.height - 50, // Опускаем джойстик вниз
-    radius: 50,
-    innerRadius: 30,
+    y: canvas.height - 150, // Опускаем джойстик чуть выше нижней части экрана
+    radius: 80,
+    innerRadius: 50,
     touchX: null,
     touchY: null,
     isMoving: false
@@ -292,5 +292,4 @@ function gameOver() {
 function winGame() {
     isGameOver = true;
     winMenu.classList.remove("hidden");
-    canvas.classList.add("hidden");
-}
+    canvas.class
