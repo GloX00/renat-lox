@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игра с уровнями</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        .joystick-container {
+            position: fixed;
+            bottom: 50px;
+            left: 50px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .joystick {
+            width: 60px;
+            height: 60px;
+            background: gray;
+            border-radius: 50%;
+            position: relative;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu" id="menu">
+        <h1>Добро пожаловать в игру!</h1>
+        <button onclick="startGame()">Старт</button>
+    </div>
+    <canvas id="gameCanvas" width="400" height="400" class="hidden"></canvas>
+    <div class="menu hidden" id="gameOver">
+        <h2>Игра окончена!</h2>
+        <button onclick="restartGame()">Рестарт</button>
+    </div>
+    
+    <div class="joystick-container">
+        <div class="joystick" id="joystick"></div>
+    </div>
+    
+    <script src="script.js"></script>
+    <script>
+        let joystick = document.getElementById("joystick");
+        let joystickContainer = document.querySelector(".joystick-container");
+        let startX, startY;
+
+        joystick.addEventListener("touchstart", function (e) {
+            let touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+        });
+
+        joystick.addEventListener("touchmove", function (e) {
+            let touch = e.touches[0];
+            let dx = touch.clientX - startX;
+            let dy = touch.clientY - startY;
+            
+            let angle = Math.atan2(dy, dx);
+            let distance = Math.min(50, Math.sqrt(dx * dx + dy * dy));
+            let moveX = Math.cos(angle) * distance;
+            let moveY = Math.sin(angle) * distance;
+            
+            joystick.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            
+            if (distance > 20) {
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    if (dx > 0) movePlayer("right");
+                    else movePlayer("left");
+                } else {
+                    if (dy > 0) movePlayer("down");
+                    else movePlayer("up");
+                }
+            }
+        });
+
+        joystick.addEventListener("touchend", function () {
+            joystick.style.transform = "translate(0px, 0px)";
+        });
+    </script>
+</body>
+</html>
