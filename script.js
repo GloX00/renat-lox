@@ -13,8 +13,6 @@ canvas.height = window.innerHeight * 0.7;
 
 let player, bonuses, mobs, shields, level, isGameOver, lives;
 let keys = {};
-let touchActive = false;
-let touchX = null, touchY = null;
 const MAX_LEVEL = 10;
 
 function startGame() {
@@ -75,9 +73,17 @@ joystick.addEventListener("touchend", function () {
     playerVelocityY = 0;
 });
 
-function updatePlayerPosition() {
+function gameLoop() {
+    if (isGameOver) return;
+
     player.x += playerVelocityX;
     player.y += playerVelocityY;
-    requestAnimationFrame(updatePlayerPosition);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = player.shield ? "cyan" : "blue";
+    ctx.fillRect(player.x, player.y, player.size, player.size);
+    
+    requestAnimationFrame(gameLoop);
 }
-updatePlayerPosition();
+
+gameLoop();
