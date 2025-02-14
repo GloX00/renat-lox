@@ -5,7 +5,7 @@ const gameOverMenu = document.getElementById("gameOver");
 const winMenu = document.createElement("div");
 
 winMenu.classList.add("menu", "hidden");
-winMenu.innerHTML = `<h2>Победа! Ну ты и лох 😂</h2><button onclick="restartGame()">Играть снова</button>`;
+winMenu.innerHTML = `<h2>Победа! Ну ты и лох 😂</h2><button onclick="restartGame()" style="font-size: 14px; padding: 5px 10px;">Играть снова</button>`;
 document.body.appendChild(winMenu);
 
 // Масштабирование под телефон
@@ -19,12 +19,12 @@ let touchX = null, touchY = null; // Координаты касания
 
 const MAX_LEVEL = 10;
 
-// Джойстик
+// Джойстик (уменьшен)
 const joystick = {
     x: canvas.width / 2, // Центрируем по горизонтали
     y: canvas.height - 150, // Опускаем джойстик чуть выше нижней части экрана
-    radius: 32, // Уменьшаем внешний радиус джойстика на 60%
-    innerRadius: 20, // Уменьшаем внутренний радиус джойстика на 60%
+    radius: 20, // Уменьшаем внешний радиус джойстика на 60%
+    innerRadius: 12, // Уменьшаем внутренний радиус джойстика на 60%
     touchX: null,
     touchY: null,
     isMoving: false
