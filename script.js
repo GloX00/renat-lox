@@ -8,11 +8,15 @@ winMenu.classList.add("menu", "hidden");
 winMenu.innerHTML = `<h2>Победа! Ну ты и лох 😂</h2><button onclick="restartGame()">Играть снова</button>`;
 document.body.appendChild(winMenu);
 
+// Масштабирование под телефон
 canvas.width = window.innerWidth * 0.9;
 canvas.height = window.innerHeight * 0.7;
 
 let player, bonuses, mobs, shields, level, isGameOver, lives;
 let keys = {};
+let touchActive = false;
+let touchX = null, touchY = null; // Координаты касания
+
 const MAX_LEVEL = 10;
 
 function startGame() {
@@ -40,50 +44,202 @@ function restartGame() {
     startGame();
 }
 
-let joystick = document.getElementById("joystick");
-let startX, startY;
-let playerVelocityX = 0;
-let playerVelocityY = 0;
+function generateBonuses() {
+    bonuses = [];
+    for (let i = 0; i < level * 2; i++) {
+        bonuses.push({
+            x: Math.random() * (canvas.width - 20),
+            y: Math.random() * (canvas.height - 20),
+            size: 20
+        });
+    }
+}
 
-joystick.addEventListener("touchstart", function (e) {
-    let touch = e.touches[0];
-    startX = touch.clientX;
-    startY = touch.clientY;
-});
+function generateMobs() {
+    mobs = [];
+    for (let i = 0; i < level; i++) {
+        mobs.push({
+            x: Math.random() * (canvas.width - 20),
+            y: Math.random() * (canvas.height - 20),
+            size: 30,
+            speedX: (Math.random() - 0.5) * 3,
+            speedY: (Math.random() - 0.5) * 3
+        });
+    }
+}
 
-joystick.addEventListener("touchmove", function (e) {
-    let touch = e.touches[0];
-    let dx = touch.clientX - startX;
-    let dy = touch.clientY - startY;
-    
-    let angle = Math.atan2(dy, dx);
-    let distance = Math.min(50, Math.sqrt(dx * dx + dy * dy));
-    let moveX = Math.cos(angle) * distance;
-    let moveY = Math.sin(angle) * distance;
-    
-    joystick.style.transform = `translate(${moveX}px, ${moveY}px)`;
-    
-    playerVelocityX = (moveX / 50) * player.speed;
-    playerVelocityY = (moveY / 50) * player.speed;
-});
-
-joystick.addEventListener("touchend", function () {
-    joystick.style.transform = "translate(0px, 0px)";
-    playerVelocityX = 0;
-    playerVelocityY = 0;
-});
+function generateShields() {
+    shields = [];
+    for (let i = 0; i < 1; i++) {
+        shields.push({
+            x: Math.random() * (canvas.width - 20),
+            y: Math.random() * (canvas.height - 20),
+            size: 30
+        });
+    }
+}
 
 function gameLoop() {
     if (isGameOver) return;
 
-    player.x += playerVelocityX;
-    player.y += playerVelocityY;
+    movePlayer();
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Рисуем игрока
     ctx.fillStyle = player.shield ? "cyan" : "blue";
     ctx.fillRect(player.x, player.y, player.size, player.size);
-    
+
+    // Рисуем бонусы
+    bonuses.forEach((bonus, index) => {
+        ctx.fillStyle = "green";
+        ctx.fillRect(bonus.x, bonus.y, bonus.size, bonus.size);
+
+        if (isColliding(player, bonus)) {
+            bonuses.splice(index, 1);
+        }
+    });
+
+    // Рисуем щиты
+    shields.forEach((shield, index) => {
+        ctx.fillStyle = "blue";
+        ctx.fillRect(shield.x, shield.y, shield.size, shield.size);
+
+        if (isColliding(player, shield)) {
+            player.shield = true;
+            shields.splice(index, 1);
+        }
+    });
+
+    // Двигаем мобов и рисуем их
+    mobs.forEach((mob, index) => {
+        mob.x += mob.speedX;
+        mob.y += mob.speedY;
+
+        if (mob.x < 0 || mob.x + mob.size > canvas.width) mob.speedX *= -1;
+        if (mob.y < 0 || mob.y + mob.size > canvas.height) mob.speedY *= -1;
+
+        ctx.fillStyle = "red";
+        ctx.fillRect(mob.x, mob.y, mob.size, mob.size);
+
+        // Проверка столкновения с мобом
+        if (isColliding(player, mob)) {
+            if (player.shield) {
+                player.shield = false;
+            } else {
+                lives--;
+                if (lives <= 0) {
+                    gameOver();
+                    return;
+                }
+            }
+            mobs.splice(index, 1);
+        }
+    });
+
+    // Если все бонусы собраны
+    if (bonuses.length === 0) {
+        if (level === MAX_LEVEL) {
+            winGame();
+            return;
+        }
+        level++;
+        generateBonuses();
+        generateMobs();
+        generateShields();
+    }
+
+    drawLives();
+    drawLevel();
     requestAnimationFrame(gameLoop);
 }
 
-gameLoop();
+// Проверка столкновения
+function isColliding(a, b) {
+    return (
+        a.x < b.x + b.size &&
+        a.x + a.size > b.x &&
+        a.y < b.y + b.size &&
+        a.y + a.size > b.y
+    );
+}
+
+// Рисуем жизни
+function drawLives() {
+    ctx.fillStyle = "black";
+    ctx.font = "20px Arial";
+    ctx.fillText("Жизни: " + lives, 10, 20);
+}
+
+// Рисуем уровень
+function drawLevel() {
+    ctx.fillStyle = "black";
+    ctx.font = "20px Arial";
+    ctx.fillText("Уровень: " + level, canvas.width - 120, 20);
+}
+
+// Двигаем игрока (исправлено касание и координаты)
+function movePlayer() {
+    if (keys["ArrowUp"]) player.y -= player.speed;
+    if (keys["ArrowDown"]) player.y += player.speed;
+    if (keys["ArrowLeft"]) player.x -= player.speed;
+    if (keys["ArrowRight"]) player.x += player.speed;
+
+    // Преобразуем касания в координаты на canvas
+    if (touchActive && touchX !== null && touchY !== null) {
+        const rect = canvas.getBoundingClientRect(); // Получаем координаты холста на экране
+        let offsetX = touchX - rect.left;
+        let offsetY = touchY - rect.top;
+
+        // Рассчитываем вектор от центра игрока до точки касания
+        let dx = offsetX - (player.x + player.size / 2);
+        let dy = offsetY - (player.y + player.size / 2);
+        let length = Math.sqrt(dx * dx + dy * dy);
+        
+        // Двигаем игрока в сторону касания
+        if (length > 10) {
+            player.x += (dx / length) * player.speed;
+            player.y += (dy / length) * player.speed;
+        }
+    }
+
+    // Проверка на выход за пределы экрана
+    if (player.x < 0) player.x = 0;
+    if (player.y < 0) player.y = 0;
+    if (player.x + player.size > canvas.width) player.x = canvas.width - player.size;
+    if (player.y + player.size > canvas.height) player.y = canvas.height - player.size;
+}
+
+// Функции касания (исправлено)
+canvas.addEventListener("touchstart", (event) => {
+    const touch = event.touches[0];
+    touchX = touch.clientX;
+    touchY = touch.clientY;
+    touchActive = true;
+});
+
+canvas.addEventListener("touchmove", (event) => {
+    const touch = event.touches[0];
+    touchX = touch.clientX;
+    touchY = touch.clientY;
+});
+
+canvas.addEventListener("touchend", () => {
+    touchActive = false;
+});
+
+// Функции клавиатуры
+document.addEventListener("keydown", (event) => keys[event.key] = true);
+document.addEventListener("keyup", (event) => keys[event.key] = false);
+
+function gameOver() {
+    isGameOver = true;
+    gameOverMenu.classList.remove("hidden");
+    canvas.classList.add("hidden");
+}
+
+function winGame() {
+    isGameOver = true;
+    winMenu.classList.remove("hidden");
+    canvas.classList.add("hidden");
+}
