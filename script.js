@@ -23,8 +23,8 @@ const MAX_LEVEL = 10;
 const joystick = {
     x: canvas.width / 2, // Центрируем по горизонтали
     y: canvas.height - 150, // Опускаем джойстик чуть выше нижней части экрана
-    radius: 80,
-    innerRadius: 50,
+    radius: 32, // Уменьшаем внешний радиус джойстика на 60%
+    innerRadius: 20, // Уменьшаем внутренний радиус джойстика на 60%
     touchX: null,
     touchY: null,
     isMoving: false
