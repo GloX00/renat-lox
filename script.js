@@ -30,12 +30,6 @@ const joystick = {
     isMoving: false
 };
 
-// Экран создателя игры
-const creatorScreen = document.createElement("div");
-creatorScreen.classList.add("menu");
-creatorScreen.innerHTML = `<h2>Создатель игры: ЧОРНЫЙ</h2><button onclick="showRules()">Начать игру</button>`;
-document.body.appendChild(creatorScreen);
-
 // Экран с правилами игры
 const rulesScreen = document.createElement("div");
 rulesScreen.classList.add("menu");
@@ -49,11 +43,6 @@ rulesScreen.innerHTML = `
     <button onclick="startGame()" style="margin-top: 90%;">Начать игру</button>
 `;
 document.body.appendChild(rulesScreen);
-
-function showRules() {
-    creatorScreen.classList.add("hidden"); // Скрыть экран с создателем
-    rulesScreen.classList.remove("hidden"); // Показать экран с правилами
-}
 
 function startGame() {
     rulesScreen.classList.add("hidden"); // Скрыть экран с правилами
