@@ -19,6 +19,17 @@ let touchX = null, touchY = null; // Координаты касания
 
 const MAX_LEVEL = 10;
 
+// Джойстик
+const joystick = {
+    x: 100,
+    y: canvas.height - 100,
+    radius: 50,
+    innerRadius: 30,
+    touchX: null,
+    touchY: null,
+    isMoving: false
+};
+
 function startGame() {
     menu.classList.add("hidden");
     canvas.classList.remove("hidden");
@@ -151,6 +162,7 @@ function gameLoop() {
 
     drawLives();
     drawLevel();
+    drawJoystick();
     requestAnimationFrame(gameLoop);
 }
 
@@ -178,29 +190,21 @@ function drawLevel() {
     ctx.fillText("Уровень: " + level, canvas.width - 120, 20);
 }
 
-// Двигаем игрока (исправлено касание и координаты)
+// Двигаем игрока с помощью джойстика
 function movePlayer() {
-    if (keys["ArrowUp"]) player.y -= player.speed;
-    if (keys["ArrowDown"]) player.y += player.speed;
-    if (keys["ArrowLeft"]) player.x -= player.speed;
-    if (keys["ArrowRight"]) player.x += player.speed;
-
-    // Преобразуем касания в координаты на canvas
-    if (touchActive && touchX !== null && touchY !== null) {
-        const rect = canvas.getBoundingClientRect(); // Получаем координаты холста на экране
-        let offsetX = touchX - rect.left;
-        let offsetY = touchY - rect.top;
-
-        // Рассчитываем вектор от центра игрока до точки касания
-        let dx = offsetX - (player.x + player.size / 2);
-        let dy = offsetY - (player.y + player.size / 2);
+    if (joystick.isMoving && joystick.touchX !== null && joystick.touchY !== null) {
+        let dx = joystick.touchX - joystick.x;
+        let dy = joystick.touchY - joystick.y;
         let length = Math.sqrt(dx * dx + dy * dy);
-        
-        // Двигаем игрока в сторону касания
-        if (length > 10) {
-            player.x += (dx / length) * player.speed;
-            player.y += (dy / length) * player.speed;
+
+        if (length > joystick.innerRadius) {
+            dx = (dx / length) * joystick.innerRadius;
+            dy = (dy / length) * joystick.innerRadius;
         }
+
+        // Двигаем игрока в сторону джойстика
+        player.x += dx / 10;
+        player.y += dy / 10;
     }
 
     // Проверка на выход за пределы экрана
@@ -210,22 +214,43 @@ function movePlayer() {
     if (player.y + player.size > canvas.height) player.y = canvas.height - player.size;
 }
 
-// Функции касания (исправлено)
+// Рисуем джойстик
+function drawJoystick() {
+    ctx.beginPath();
+    ctx.arc(joystick.x, joystick.y, joystick.radius, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+    ctx.fill();
+
+    if (joystick.isMoving) {
+        ctx.beginPath();
+        ctx.arc(joystick.touchX, joystick.touchY, joystick.innerRadius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.fill();
+    }
+}
+
+// Обработчик событий для касания
 canvas.addEventListener("touchstart", (event) => {
     const touch = event.touches[0];
-    touchX = touch.clientX;
-    touchY = touch.clientY;
-    touchActive = true;
+    const dist = Math.sqrt(Math.pow(touch.clientX - joystick.x, 2) + Math.pow(touch.clientY - joystick.y, 2));
+
+    if (dist <= joystick.radius) {
+        joystick.touchX = touch.clientX;
+        joystick.touchY = touch.clientY;
+        joystick.isMoving = true;
+    }
 });
 
 canvas.addEventListener("touchmove", (event) => {
-    const touch = event.touches[0];
-    touchX = touch.clientX;
-    touchY = touch.clientY;
+    if (joystick.isMoving) {
+        const touch = event.touches[0];
+        joystick.touchX = touch.clientX;
+        joystick.touchY = touch.clientY;
+    }
 });
 
 canvas.addEventListener("touchend", () => {
-    touchActive = false;
+    joystick.isMoving = false;
 });
 
 // Функции клавиатуры
