@@ -17,7 +17,7 @@ let keys = {};
 let touchActive = false;
 let touchX = null, touchY = null; // Координаты касания
 
-const MAX_LEVEL = 10;
+const MAX_LEVEL = 1;
 
 // Джойстик
 const joystick = {
