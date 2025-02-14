@@ -55,7 +55,7 @@ function startGame() {
     isGameOver = false;
 
     // Увеличили скорость персонажа на 40%
-    player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, speed: 5.6, shield: false };
+    player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, speed: 7.84, shield: false }; // 5.6 * 1.4
     bonuses = [];
     mobs = [];
     shields = [];
@@ -88,8 +88,8 @@ function generateMobs() {
             x: Math.random() * (canvas.width - 20),
             y: Math.random() * (canvas.height - 20),
             size: 30,
-            speedX: (Math.random() - 0.5) * 3,
-            speedY: (Math.random() - 0.5) * 3
+            speedX: (Math.random() - 0.5) * 6, // Ускорим мобов
+            speedY: (Math.random() - 0.5) * 6
         });
     }
 }
