@@ -55,6 +55,8 @@
         let joystick = document.getElementById("joystick");
         let joystickContainer = document.querySelector(".joystick-container");
         let startX, startY;
+        let playerVelocityX = 0;
+        let playerVelocityY = 0;
 
         joystick.addEventListener("touchstart", function (e) {
             let touch = e.touches[0];
@@ -74,20 +76,26 @@
             
             joystick.style.transform = `translate(${moveX}px, ${moveY}px)`;
             
-            if (distance > 20) {
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    if (dx > 0) movePlayer("right");
-                    else movePlayer("left");
-                } else {
-                    if (dy > 0) movePlayer("down");
-                    else movePlayer("up");
-                }
-            }
+            playerVelocityX = moveX / 10;
+            playerVelocityY = moveY / 10;
         });
 
         joystick.addEventListener("touchend", function () {
             joystick.style.transform = "translate(0px, 0px)";
+            playerVelocityX = 0;
+            playerVelocityY = 0;
         });
+
+        function updatePlayerPosition() {
+            if (typeof movePlayer === "function") {
+                if (playerVelocityX > 0) movePlayer("right");
+                if (playerVelocityX < 0) movePlayer("left");
+                if (playerVelocityY > 0) movePlayer("down");
+                if (playerVelocityY < 0) movePlayer("up");
+            }
+            requestAnimationFrame(updatePlayerPosition);
+        }
+        updatePlayerPosition();
     </script>
 </body>
 </html>
