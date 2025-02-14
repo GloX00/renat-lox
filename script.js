@@ -54,7 +54,8 @@ function startGame() {
     lives = 3;
     isGameOver = false;
 
-    player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, speed: 4, shield: false };
+    // Увеличили скорость персонажа на 40%
+    player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, speed: 5.6, shield: false };
     bonuses = [];
     mobs = [];
     shields = [];
