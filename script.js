@@ -30,7 +30,14 @@ const joystick = {
     isMoving: false
 };
 
+// Экран создателя игры
+const creatorScreen = document.createElement("div");
+creatorScreen.classList.add("menu");
+creatorScreen.innerHTML = `<h2>Создатель игры: ЧОРНЫЙ</h2><button onclick="startGame()">Начать игру</button>`;
+document.body.appendChild(creatorScreen);
+
 function startGame() {
+    creatorScreen.classList.add("hidden"); // Скрыть экран с создателем
     menu.classList.add("hidden");
     canvas.classList.remove("hidden");
     gameOverMenu.classList.add("hidden");
