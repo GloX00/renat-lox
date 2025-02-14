@@ -292,4 +292,5 @@ function gameOver() {
 function winGame() {
     isGameOver = true;
     winMenu.classList.remove("hidden");
-    canvas.class
+    canvas.classList.add("hidden");
+}
