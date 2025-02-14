@@ -54,8 +54,8 @@ function startGame() {
     lives = 3;
     isGameOver = false;
 
-    // Увеличили скорость персонажа на 40%
-    player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, speed: 7.84, shield: false }; // 5.6 * 1.4
+    // Увеличили скорость персонажа на 60%
+    player = { x: canvas.width / 2, y: canvas.height / 2, size: 30, speed: 9, shield: false }; // 7.84 * 1.6
     bonuses = [];
     mobs = [];
     shields = [];
@@ -88,8 +88,8 @@ function generateMobs() {
             x: Math.random() * (canvas.width - 20),
             y: Math.random() * (canvas.height - 20),
             size: 30,
-            speedX: (Math.random() - 0.5) * 6, // Ускорим мобов
-            speedY: (Math.random() - 0.5) * 6
+            speedX: (Math.random() - 0.5) * 10, // Ускорим мобов
+            speedY: (Math.random() - 0.5) * 10
         });
     }
 }
@@ -218,8 +218,8 @@ function movePlayer() {
         }
 
         // Двигаем игрока в сторону джойстика
-        player.x += dx / 10;
-        player.y += dy / 10;
+        player.x += dx / 8;  // Уменьшил на 2 (для более быстрой реакции)
+        player.y += dy / 8;
     }
 
     // Проверка на выход за пределы экрана
