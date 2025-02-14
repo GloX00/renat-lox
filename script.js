@@ -33,11 +33,30 @@ const joystick = {
 // Экран создателя игры
 const creatorScreen = document.createElement("div");
 creatorScreen.classList.add("menu");
-creatorScreen.innerHTML = `<h2>Создатель игры: ЧОРНЫЙ</h2><button onclick="startGame()">Начать игру</button>`;
+creatorScreen.innerHTML = `<h2>Создатель игры: ЧОРНЫЙ</h2><button onclick="showRules()">Начать игру</button>`;
 document.body.appendChild(creatorScreen);
 
-function startGame() {
+// Экран с правилами игры
+const rulesScreen = document.createElement("div");
+rulesScreen.classList.add("menu");
+rulesScreen.innerHTML = `
+    <h2>Правила игры:</h2>
+    <p>Синий персонаж — это ты</p>
+    <p>Синий квадрат — это щит</p>
+    <p>Красный квадрат — это враг</p>
+    <p>У тебя есть 3 жизни</p>
+    <p>В игре 10 уровней</p>
+    <button onclick="startGame()">Начать игру</button>
+`;
+document.body.appendChild(rulesScreen);
+
+function showRules() {
     creatorScreen.classList.add("hidden"); // Скрыть экран с создателем
+    rulesScreen.classList.remove("hidden"); // Показать экран с правилами
+}
+
+function startGame() {
+    rulesScreen.classList.add("hidden"); // Скрыть экран с правилами
     menu.classList.add("hidden");
     canvas.classList.remove("hidden");
     gameOverMenu.classList.add("hidden");
